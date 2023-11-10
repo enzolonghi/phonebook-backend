@@ -14,7 +14,7 @@ app.use(express.static('dist'))
 require('dotenv').config()
 const Person = require('./models/person')
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
     Person.find({})
     .then(persons => {
       console.log(persons)
@@ -23,7 +23,7 @@ app.get('/api/persons', (request, response) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
     Person.find({})
     .then(persons => {
       const number_of_persons = persons.length
@@ -36,7 +36,7 @@ app.get('/info', (request, response) => {
     
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
     .then(person => {
       if (person) {
@@ -70,7 +70,7 @@ app.put('/api/persons/:id', (request, response, next) => {
   .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
     const body = request.body
 
