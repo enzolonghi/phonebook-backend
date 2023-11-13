@@ -5,8 +5,8 @@ const morgan = require('morgan')
 const cors = require('cors')
 app.use(cors())
 
-morgan.token('data', function(req, res) {
-    return JSON.stringify(req.body)
+morgan.token('data', function(req) {
+  return JSON.stringify(req.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 app.use(express.static('dist'))
@@ -15,7 +15,7 @@ require('dotenv').config()
 const Person = require('./models/person')
 
 app.get('/api/persons', (request, response, next) => {
-    Person.find({})
+  Person.find({})
     .then(persons => {
       console.log(persons)
       response.json(persons)
@@ -24,20 +24,19 @@ app.get('/api/persons', (request, response, next) => {
 })
 
 app.get('/info', (request, response, next) => {
-    Person.find({})
+  Person.find({})
     .then(persons => {
       const number_of_persons = persons.length
       const date = new Date()
       response.send(`<p> Phonebook has info for ${number_of_persons} people<p/>        
                     <p>${date}<p/>`
-                    )
+      )
     })
     .catch(error => next(error))
-    
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-    Person.findById(request.params.id)
+  Person.findById(request.params.id)
     .then(person => {
       if (person) {
         response.json(person)
@@ -50,35 +49,35 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findOneAndDelete({ _id: request.params.id })
-  .then(result => {
-    response.status(204).end()
-  })
-  .catch(error => next(error))
+    .then(() => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const {name, number} = request.body
+  const { name, number } = request.body
 
   Person.findByIdAndUpdate(
     request.params.id,
     { name, number },
     { new: true, runValidators: true, context: 'query' }
-    )
-  .then(updatedPerson => {
-    response.json(updatedPerson)
-  })
-  .catch(error => next(error))
+  )
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
-    app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
-    const body = request.body
+  app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
+  const body = request.body
 
-    const person = new Person({
-      name: body.name,
-      number: body.number,
-    })
-    person
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  })
+  person
     .save()
     .then(person => {
       response.json(person)
@@ -87,7 +86,7 @@ app.post('/api/persons', (request, response, next) => {
 })
 
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
+  response.status(404).send({ error: 'unknown endpoint' })
 }
 app.use(unknownEndpoint)
 
@@ -104,5 +103,5 @@ app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-}) 
+  console.log(`Server running on port ${PORT}`)
+})
